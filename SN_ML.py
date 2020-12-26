@@ -158,12 +158,12 @@ def closest(lst, K):
     pos2 = -1
     # Iterate over list items by index pos
     for i in range(len(list1)):
-        if (num1 >=0.0 and num1<=5.0):
+        if (num1 >=0.0 and num1<=4.0):
             # Check if items matches the given element
             if list1[i] == num1:
                 pos1 = i
     for i in range(len(list1)):
-        if (num2 >=0.0 and num2<=5.0):
+        if (num2 >=0.0 and num2<=4.0):
             # Check if items matches the given element
             if list1[i]==num2:
                 pos2 = i
@@ -187,12 +187,12 @@ def Likelihood_bins(n_true,T): #bineado
     AT_min=0.1*1e11
     AT_max = 10*1e11 #cm^-2
 
-    nscan =100
+    nscan =1000
     nsteps = 1
 
     for i in range(0,nscan): #range of scan
-        Eaverage.append(Eav_min + (Eav_max-Eav_min)/nsteps * i)
-        AT.append(AT_min + (AT_max-AT_min)/nsteps * i)
+        Eaverage.append(Eav_min + (Eav_max-Eav_min)/nscan * i)
+        AT.append(AT_min + (AT_max-AT_min)/nscan * i)
 
     #Scan
     for a in range(len(AT)): #all amplitudes
@@ -231,10 +231,11 @@ def Likelihood_bins(n_true,T): #bineado
 
         chi2.clear()
 
-        Escan.append(Eaverage[e1])
-        Escan.append(Eaverage[e2])
-        Ascan.append(AT[a])
-        Ascan.append(AT[a])
+        if (e1!=-1 and e2!=-1):
+            Escan.append(Eaverage[e1])
+            Escan.append(Eaverage[e2])
+            Ascan.append(AT[a])
+            Ascan.append(AT[a])
 
 
     plt.hist(likelihoods,label='Likelihood distribution', color='blue', alpha = 0.3)
@@ -249,8 +250,8 @@ def Likelihood_bins(n_true,T): #bineado
     plt.legend()
     plt.show()
 
-    plt.scatter(Escan, Ascan)
-    plt.scatter(Eav_true,A_true, color='green')
+    plt.scatter(Escan, Ascan, marker=',' , s=1)
+    plt.scatter(Eav_true,A_true, color='green', marker=',', s=1)
     plt.xlabel('ET')
     plt.ylabel('AT')
     plt.ylim(0.01*1e11,10*1e11)
