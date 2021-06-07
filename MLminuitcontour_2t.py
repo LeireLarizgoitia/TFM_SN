@@ -45,7 +45,7 @@ kpc = 1e3 * constants.parsec #m
 kpc_cm = kpc * 1e2 #cm
 ton = constants.long_ton #one long ton in kg
 
-h =  constants.value(u'Planck constant in eV/Hz')
+h =  constants.value(u'Planck constant') / e
 hbar = h/(2*np.pi) # the Planck constant h divided by 2 pi in eV.s
 hbar_c = hbar * c* 1E+9 # units MeV fm
 hbar_c_ke = 6.58211899*1e-17 * c #KeV cm
@@ -606,7 +606,7 @@ for i in range(0,len(vlist)):
 
 c=[cv,ce]
 
-with open('WARM_Mass'+str(int(Mass_detector*1e-3))+'t_'+str(Field)+'Vcm_L'+str(ne_thres)+'electrons_res'+str(sigma0)+'_ML.txt', "w") as file:
+with open('Xenon_2t_ML.txt', "w") as file:
     for x in zip(*c):
         file.write("{0} {1}\n".format(*x))
 
@@ -618,7 +618,7 @@ grid1 = m.mncontour('a','b', cl=0.6827)  #1SIGMA
 
 "Save contour data"
 
-with open('WARM_Mass'+str(int(Mass_detector*1e-3))+'t_'+str(Field)+'Vcm_L'+str(ne_thres)+'electrons_res'+str(sigma0)+'_contour.txt', "w") as txt_file:
+with open('Xenon_2t_contour.txt', "w") as txt_file:
     for line in grid1:
         content = str(line)
         txt_file.write(" ".join(content) + "\n") #AT, Eav
