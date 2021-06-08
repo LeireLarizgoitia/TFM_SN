@@ -6,11 +6,11 @@
 from __future__ import division
 
 #import matplotlib
-from matplotlib import pyplot as plt
-matplotlib.rcParams['text.usetex'] = True
+#from matplotlib import pyplot as plt
+#matplotlib.rcParams['text.usetex'] = True
 #plt.rcParams.update({'font.size': 20})
-import matplotlib.colors as mcolors
-import matplotlib.ticker as mtick
+#import matplotlib.colors as mcolors
+#import matplotlib.ticker as mtick
 import numpy as np
 import math
 import scipy.integrate as integrate
