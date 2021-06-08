@@ -23,7 +23,7 @@ from scipy import stats
 from scipy.stats import norm
 from scipy import special
 from scipy.special import gamma, factorial
-import matplotlib.mlab as mlab
+#import matplotlib.mlab as mlab
 import statistics
 from scipy.optimize import curve_fit
 from scipy.stats import poisson
