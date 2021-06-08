@@ -5,12 +5,12 @@
 
 from __future__ import division
 
-#import matplotlib
-#from matplotlib import pyplot as plt
-#matplotlib.rcParams['text.usetex'] = True
+import matplotlib
+from matplotlib import pyplot as plt
+matplotlib.rcParams['text.usetex'] = True
 #plt.rcParams.update({'font.size': 20})
-#import matplotlib.colors as mcolors
-#import matplotlib.ticker as mtick
+import matplotlib.colors as mcolors
+import matplotlib.ticker as mtick
 import numpy as np
 import math
 import scipy.integrate as integrate
@@ -23,7 +23,7 @@ from scipy import stats
 from scipy.stats import norm
 from scipy import special
 from scipy.special import gamma, factorial
-#import matplotlib.mlab as mlab
+import matplotlib.mlab as mlab
 import statistics
 from scipy.optimize import curve_fit
 from scipy.stats import poisson
