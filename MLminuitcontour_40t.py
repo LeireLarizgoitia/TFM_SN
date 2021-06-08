@@ -589,28 +589,28 @@ e_err = m.errors[1]
 
 "Save contour data"
 
-vlist=[]
-elist=[]
+#vlist=[]
+#elist=[]
 
-vlist.append(At_media)
-elist.append(Ev_media)
-vlist.append(a_ML)
-elist.append(e_ML)
+#vlist.append(At_media)
+#elist.append(Ev_media)
+#vlist.append(a_ML)
+#elist.append(e_ML)
 
-cv=[]
-ce=[]
+#cv=[]
+#ce=[]
 
-for i in range(0,len(vlist)):
-    cv.append(vlist[i])
-    ce.append(elist[i])
+#for i in range(0,len(vlist)):
+#    cv.append(vlist[i])
+#    ce.append(elist[i])
 
-c=[cv,ce]
+#c=[cv,ce]
 
-with open('Default_ML.txt', "w") as file:
-    for x in zip(*c):
-        file.write("{0} {1}\n".format(*x))
+#with open('Default_ML.txt', "w") as file:
+#    for x in zip(*c):
+#        file.write("{0} {1}\n".format(*x))
 
-file.close()
+#file.close()
 
 
 "CONTOUR PLOT"
