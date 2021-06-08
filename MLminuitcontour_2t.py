@@ -326,7 +326,7 @@ def fnc_events_interval_obs():
     T_true=[]
     dNdT = []
 
-    nsteps = 10000
+    nsteps = 1000
 
     for i in range(0,nsteps+1):
         t = T_thres + (T_max - T_thres)/nsteps * i
@@ -427,7 +427,7 @@ def fnc_events_interval_obs_sum(A,E,alpha):
     T_true=[]
     dNdT = []
 
-    nsteps = 10000
+    nsteps = 1000
 
     for i in range(0,nsteps+1):
         t = T_thres + (T_max - T_thres)/nsteps * i
