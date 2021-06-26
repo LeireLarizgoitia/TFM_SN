@@ -6,8 +6,8 @@
 from __future__ import division
 
 import matplotlib
-from matplotlib import pyplot as plt
 matplotlib.rcParams['text.usetex'] = True
+from matplotlib import pyplot as plt
 #plt.rcParams.update({'font.size': 20})
 import matplotlib.colors as mcolors
 import matplotlib.ticker as mtick
@@ -87,7 +87,7 @@ gv_n = -1/2
 "NORMALIZATION CONSTANT"
 #sigma0 = 0.4 #0.497 #actually it is simga0/T_thres
 Mass_detector = 40* 1e3 #kg
-Dist = 10 #kpc
+Dist = 10 #kpc #np.sqrt(20)*
 Distance = Dist * kpc_cm # Supernova at the Galactic centre in cm
 
 #print('Mass of the detector in kg : ', Mass_detector)
@@ -104,9 +104,23 @@ Eav_truee = 11 #MeV
 Eav_trueantie = 14 #MeV
 Eav_truex = 15 #MeV
 
+alphae = 3
+alphaantie = 3
+alphax = 2
+#alpha_media  = 2.3
+
+Et2 = (gamma(alphae + 3) / gamma(alphae + 1) / (alphae + 1)**2 * Eav_truee  +  gamma(alphaantie + 3) / gamma(alphaantie + 1) / (alphaantie + 1)**2 * Eav_trueantie + 4* ( gamma(alphax + 3) / gamma(alphax + 1) / (alphax + 1)**2 * Eav_truex) ) /(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
+
+Et = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
+
+alpha_media = (2*Et**2 - Et2) / (Et2 - Et**2)
+
+#print('alphat ', alpha_media)
+
 Ev_media = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
-#print('Weighted average of the averange energy', Ev_media)
+#print('Weighted average of the averange energy', Et)
+#print('Weighted average of the averange energy', Et2 / Et**2)
 
 Le = 5*1e52 *erg_MeV
 Lantie = 5*1e52 *erg_MeV
@@ -118,20 +132,14 @@ At_truee = Le / Area / Eav_truee
 At_trueantie = Lantie / Area / Eav_trueantie
 At_truex = Lx / Area / Eav_truex
 
-#At_media = (At_truee + At_trueantie +  4*At_truex)
+#At_media = At_truee + At_trueantie +  4*At_truex
 
-At_media = 6 * L / Area / Ev_media
+#At_media = 6 * L / Area / Ev_media
+
+At_media =  L / Area *(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
 #print('Luminosity: ', L / erg_MeV , 'ergs')
 #print('AT in cm^-2 : ', At_media)
-
-
-alphae = 3
-alphaantie = 3
-alphax = 2
-alpha_media  = 2.3 # 6 / (1/alphae + 1/alphaantie +  4*1/alphax)
-
-#print('alpha e, antie, x : ', alphae, ',', alphaantie, ',',  alphax)
 
 "NORMALIZATION"
 
@@ -140,9 +148,7 @@ Dist = Distance / kpc_cm
 
 efficiency = 0.80
 
-normalization =  Mass_detector * 1e3 * Na / (M_u * Area)
-
-#print('Normalization constant for a detector of mass ', Mass_detector, ' kg and a distance to the source of ', Dist, ' kpc : '  , normalization)
+normalization =  Mass_detector * 1e3 * Na / (M_u)
 
 
 nsteps = 100
@@ -544,7 +550,7 @@ sigma0 = sigma1*np.sqrt(1/T_thres) #sigma/T at threshold
 
 "OBSERVED EVENTS"
 
-#print('nobs: ',sum(fnc_events_interval_obs()))
+print('nobs: ',sum(fnc_events_interval_obs()))
 
 "MINUIT"
 
@@ -589,28 +595,28 @@ e_err = m.errors[1]
 
 "Save contour data"
 
-#vlist=[]
-#elist=[]
+vlist=[]
+elist=[]
 
-#vlist.append(At_media)
-#elist.append(Ev_media)
-#vlist.append(a_ML)
-#elist.append(e_ML)
+vlist.append(At_media)
+elist.append(Ev_media)
+vlist.append(a_ML)
+elist.append(e_ML)
 
-#cv=[]
-#ce=[]
+cv=[]
+ce=[]
 
-#for i in range(0,len(vlist)):
-#    cv.append(vlist[i])
-#    ce.append(elist[i])
+for i in range(0,len(vlist)):
+    cv.append(vlist[i])
+    ce.append(elist[i])
 
-#c=[cv,ce]
+c=[cv,ce]
 
-#with open('Default_ML.txt', "w") as file:
-#    for x in zip(*c):
-#        file.write("{0} {1}\n".format(*x))
+with open('Default_ML.txt', "w") as file:
+    for x in zip(*c):
+        file.write("{0} {1}\n".format(*x))
 
-#file.close()
+file.close()
 
 
 "CONTOUR PLOT"

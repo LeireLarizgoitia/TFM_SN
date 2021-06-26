@@ -94,19 +94,32 @@ Distance = Dist * kpc_cm # Supernova at the Galactic centre in cm
 #print('Distance to the source in kpc : ', Dist)
 
 Area = 4*np.pi* Distance**2
-
 "SUPERNOVA MODEL"
-#alpha = 2.3
 A_true =  1 #3.9*1e11 #cm-2 irrelevant
 Eav_true = 14 #MeV
+
 
 Eav_truee = 12 #MeV
 Eav_trueantie = 15 #MeV
 Eav_truex = 18 #MeV
 
+alphae = 3
+alphaantie = 3
+alphax = 2
+#alpha_media  = 2.3
+
+Et2 = (gamma(alphae + 3) / gamma(alphae + 1) / (alphae + 1)**2 * Eav_truee  +  gamma(alphaantie + 3) / gamma(alphaantie + 1) / (alphaantie + 1)**2 * Eav_trueantie + 4* ( gamma(alphax + 3) / gamma(alphax + 1) / (alphax + 1)**2 * Eav_truex) ) /(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
+
+Et = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
+
+alpha_media = (2*Et**2 - Et2) / (Et2 - Et**2)
+
+#print('alphat ', alpha_media)
+
 Ev_media = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
-#print('Weighted average of the averange energy', Ev_media)
+#print('Weighted average of the averange energy', Et)
+#print('Weighted average of the averange energy', Et2 / Et**2)
 
 Le = 5*1e52 *erg_MeV
 Lantie = 5*1e52 *erg_MeV
@@ -118,20 +131,14 @@ At_truee = Le / Area / Eav_truee
 At_trueantie = Lantie / Area / Eav_trueantie
 At_truex = Lx / Area / Eav_truex
 
-#At_media = (At_truee + At_trueantie +  4*At_truex)
+#At_media = At_truee + At_trueantie +  4*At_truex
 
-At_media = 6 * L / Area / Ev_media
+#At_media = 6 * L / Area / Ev_media
+
+At_media =  L / Area *(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
 #print('Luminosity: ', L / erg_MeV , 'ergs')
 #print('AT in cm^-2 : ', At_media)
-
-
-alphae = 3
-alphaantie = 3
-alphax = 2
-alpha_media  = 2.3 # 6 / (1/alphae + 1/alphaantie +  4*1/alphax)
-
-#print('alpha e, antie, x : ', alphae, ',', alphaantie, ',',  alphax)
 
 "NORMALIZATION"
 

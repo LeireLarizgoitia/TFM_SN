@@ -96,17 +96,31 @@ Distance = Dist * kpc_cm # Supernova at the Galactic centre in cm
 Area = 4*np.pi* Distance**2
 
 "SUPERNOVA MODEL"
-#alpha = 2.3
 A_true =  1 #3.9*1e11 #cm-2 irrelevant
 Eav_true = 14 #MeV
+
 
 Eav_truee = 11 #MeV
 Eav_trueantie = 14 #MeV
 Eav_truex = 15 #MeV
 
+alphae = 3
+alphaantie = 3
+alphax = 2
+#alpha_media  = 2.3
+
+Et2 = (gamma(alphae + 3) / gamma(alphae + 1) / (alphae + 1)**2 * Eav_truee  +  gamma(alphaantie + 3) / gamma(alphaantie + 1) / (alphaantie + 1)**2 * Eav_trueantie + 4* ( gamma(alphax + 3) / gamma(alphax + 1) / (alphax + 1)**2 * Eav_truex) ) /(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
+
+Et = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
+
+alpha_media = (2*Et**2 - Et2) / (Et2 - Et**2)
+
+#print('alphat ', alpha_media)
+
 Ev_media = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
-#print('Weighted average of the averange energy', Ev_media)
+#print('Weighted average of the averange energy', Et)
+#print('Weighted average of the averange energy', Et2 / Et**2)
 
 Le = 5*1e52 *erg_MeV
 Lantie = 5*1e52 *erg_MeV
@@ -118,20 +132,14 @@ At_truee = Le / Area / Eav_truee
 At_trueantie = Lantie / Area / Eav_trueantie
 At_truex = Lx / Area / Eav_truex
 
-#At_media = (At_truee + At_trueantie +  4*At_truex)
+#At_media = At_truee + At_trueantie +  4*At_truex
 
-At_media = 6 * L / Area / Ev_media
+#At_media = 6 * L / Area / Ev_media
+
+At_media =  L / Area *(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
 #print('Luminosity: ', L / erg_MeV , 'ergs')
 #print('AT in cm^-2 : ', At_media)
-
-
-alphae = 3
-alphaantie = 3
-alphax = 2
-alpha_media  = 2.3 # 6 / (1/alphae + 1/alphaantie +  4*1/alphax)
-
-#print('alpha e, antie, x : ', alphae, ',', alphaantie, ',',  alphax)
 
 "NORMALIZATION"
 
@@ -546,6 +554,8 @@ sigma0 = sigma1*np.sqrt(1/T_thres) #sigma/T at threshold
 
 #print('nobs: ',sum(fnc_events_interval_obs()))
 
+
+
 "MINUIT"
 
 def fcn_np(par):
@@ -589,28 +599,28 @@ e_err = m.errors[1]
 
 "Save contour data"
 
-#vlist=[]
-#elist=[]
+vlist=[]
+elist=[]
 
-#vlist.append(At_media)
-#elist.append(Ev_media)
-#vlist.append(a_ML)
-#elist.append(e_ML)
+vlist.append(At_media)
+elist.append(Ev_media)
+vlist.append(a_ML)
+elist.append(e_ML)
 
-#cv=[]
-#ce=[]
+cv=[]
+ce=[]
 
-#for i in range(0,len(vlist)):
- #   cv.append(vlist[i])
- #   ce.append(elist[i])
+for i in range(0,len(vlist)):
+    cv.append(vlist[i])
+    ce.append(elist[i])
 
-#c=[cv,ce]
+c=[cv,ce]
 
-#with open('Xenon_2t_ML.txt', "w") as file:
-#    for x in zip(*c):
-#        file.write("{0} {1}\n".format(*x))
+with open('Xenon_2t_ML.txt', "w") as file:
+    for x in zip(*c):
+        file.write("{0} {1}\n".format(*x))
 
-#file.close()
+file.close()
 
 
 "CONTOUR PLOT"
@@ -625,5 +635,30 @@ with open('Xenon_2t_contour.txt', "w") as txt_file:
 
 txt_file.close()
 
+"""
+"LIKELIHOOD a mano"
+
+ev_1 = 12.2014166
+at_1 = 2.16149445e+12
+
+ev_2 = 12.3598044
+at = 1958113740000.0
+
+n_obs = fnc_events_interval_obs()
+
+#for i in range(1,11):
+    #at = (at_2 + (at_1 - at_2)/10 * i)
+for j in range(0,11):
+    ev = (ev_1 + (ev_2 - ev_1)/10 * j)
+
+    mu = fnc_events_interval_obs_sum(at,ev,alpha_media) #events_est
+    sum_tot=0
+    for i in range(0,len(n_obs)): #sum over bins
+        sum_tot = sum_tot + (mu[i] - n_obs[i] + n_obs[i]*np.log(n_obs[i] / mu[i])) # this is lnL / lnL_max
+        chi2 = 2*sum_tot
+
+    print(at, ev, chi2)
+
+"""
 
 "END OF CODE"
