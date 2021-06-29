@@ -113,7 +113,7 @@ Et2 = (gamma(alphae + 3) / gamma(alphae + 1) / (alphae + 1)**2 * Eav_truee  +  g
 
 Et = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
-alpha_media = (2*Et**2 - Et2) / (Et2 - Et**2)
+alpha_T = (2*Et**2 - Et2) / (Et2 - Et**2)
 
 #print('alphat ', alpha_media)
 
@@ -560,11 +560,12 @@ def fcn_np(par):
     constant_usefull()
     at=par[0]
     ev=par[1]
+    alpha = par[2]
     n_obs = []
     mu = []
 
     n_obs = fnc_events_interval_obs()
-    mu = fnc_events_interval_obs_sum(at,ev,alpha_media) #events_est
+    mu = fnc_events_interval_obs_sum(at,ev,alpha) #events_est
     sum_tot=0
     for i in range(0,len(n_obs)): #sum over bins
         sum_tot = sum_tot + (mu[i] - n_obs[i] + n_obs[i]*np.log(n_obs[i] / mu[i])) # this is lnL / lnL_max
@@ -573,13 +574,16 @@ def fcn_np(par):
 
 fcn_np.errordef = 1 #Minuit.LIKELIHOOD
 
+
 at_start = 3.8*1e11
 ev_start = 15
+alpha_start = alpha_T
 
-m = Minuit(fcn_np, (at_start,ev_start),name=("a", "b")) #
+m = Minuit(fcn_np, (at_start,ev_start,alpha_start),name=("a", "b","c")) #
 
 m.limits['a'] = (1, None)
 m.limits['b'] = (1, None)
+m.limits['c'] = (1, None)
 
 m.migrad()  # run optimiser
 #m.simplex().migrad()  # run optimiser
@@ -587,6 +591,7 @@ m.migrad()  # run optimiser
 
 a_ML = m.values[0] #ESTIMATED PARAMETERS
 e_ML = m.values[1]
+alpha_ML = m.values[2]
 
 #m.hesse()   # assumes gaussian distribution, not adecuate, ours POISSON
 m.minos()   # run covariance estimator
@@ -594,27 +599,34 @@ m.minos()   # run covariance estimator
 
 a_err = m.errors[0]
 e_err = m.errors[1]
+alpha_err = m.errors[2]
+
 
 "Save contour data"
 
 vlist=[]
 elist=[]
+alist=[]
 
 vlist.append(At_media)
 elist.append(Ev_media)
+alist.append(alpha_T)
 vlist.append(a_ML)
 elist.append(e_ML)
+alist.append(alpha_ML)
 
 cv=[]
 ce=[]
+ca=[]
 
 for i in range(0,len(vlist)):
     cv.append(vlist[i])
     ce.append(elist[i])
+    ca.append(allist[i])
 
-c=[cv,ce]
+c=[cv,ce,ca]
 
-with open('Xenon_7t_ML.txt', "w") as file:
+with open('Xenon_7t_ML_a.txt', "w") as file:
     for x in zip(*c):
         file.write("{0} {1}\n".format(*x))
 
@@ -626,7 +638,7 @@ grid1 = m.mncontour('a','b', cl=0.6827)  #1SIGMA
 
 "Save contour data"
 
-with open('Xenon_7t_contour.txt', "w") as txt_file:
+with open('Xenon_7t_contour_a.txt', "w") as txt_file:
     for line in grid1:
         content = str(line)
         txt_file.write(" ".join(content) + "\n") #AT, Eav
