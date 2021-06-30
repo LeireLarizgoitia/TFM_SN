@@ -628,7 +628,7 @@ c=[cv,ce,ca]
 
 with open('HOT_ML_a.txt', "w") as file:
     for x in zip(*c):
-        file.write("{0} {1}\n".format(*x))
+        file.write("{0} {1} {2}\n".format(*x))
 
 file.close()
 
