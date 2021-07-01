@@ -76,7 +76,7 @@ Enu_max = 50.
 
 "Recoil energy range of Xenon in KeV"
 T_min= 1.
-T_max = 1/2 * (M + 2*Enu_max*1e3 - np.sqrt(M**2 + 4*Enu_max*1e3*(M - Enu_max*1e3)))
+T_max = 2* (Enu_max*1e3)**2   / (M + 2*Enu_max*1e3 )
 
 "Approximation values"
 sin_theta_w_square = 0.2386 #zero momnetum transfer data from the paper XENON1T
@@ -85,7 +85,6 @@ gv_p = 1/2 - sin_theta_w_square
 gv_n = -1/2
 
 "NORMALIZATION CONSTANT"
-#sigma0 = 0.4 #0.497 #actually it is simga0/T_thres
 Mass_detector = 40* 1e3 #kg
 Dist = 10 #kpc
 Distance = Dist * kpc_cm # Supernova at the Galactic centre in cm
@@ -158,7 +157,8 @@ nsteps = 100
 
 def F(Q2,N,Rn2,Rn4):  # form factor of the nucleus
     Fn = N* (1 - Q2/math.factorial(3) * Rn2 /hbar_c**2 +  Q2**2/math.factorial(5) * Rn4/hbar_c**4 - Q2**3/math.factorial(7) * Rn6/hbar_c**6) #approximation
-    return (Fn / Qw)
+    Fp = (1 - 4*sin_theta_w_square)*Z *   (1 - Q2/math.factorial(3) * Rn2 /hbar_c**2 +  Q2**2/math.factorial(5) * Rn4/hbar_c**4 - Q2**3/math.factorial(7) * Rn6/hbar_c**6)
+    return ((Fn - Fp) / Qw )
 
 def cross_section(T,Enu, N,M,Rn2,Rn4):
     Q2= 2 *Enu**2 * M * T *1E-6 /(Enu**2 - Enu*T*1E-3) #MeV ^2
@@ -217,7 +217,7 @@ def constant_usefull():
     M = 131.9041535 * constants.u*c**2/e *1e-3 #mass of Xenon 132 in keV
     Enu_min = 0.0
     Enu_max = 50.
-    T_max = 1/2 * (M + 2*Enu_max*1e3 - np.sqrt(M**2 + 4*Enu_max*1e3*(M - Enu_max*1e3)))
+    T_max = 2* (Enu_max*1e3)**2   / (M + 2*Enu_max*1e3 )
 
 "Binning   -  Return: array of T in bins (bin size dependent)"
 def binning():
@@ -576,7 +576,7 @@ fcn_np.errordef = 1 #Minuit.LIKELIHOOD
 
 at_start = 3.8*1e11
 ev_start = 15
-alpha_start = alpha_T
+alpha_start = 2.0 #alpha_T
 
 m = Minuit(fcn_np, (at_start,ev_start,alpha_start),name=("a", "b","c")) #
 
@@ -586,7 +586,7 @@ m.limits['c'] = (1, None)
 
 m.migrad()  # run optimiser
 #m.simplex().migrad()  # run optimiser
-#print(m.values)
+print(m.values)
 
 a_ML = m.values[0] #ESTIMATED PARAMETERS
 e_ML = m.values[1]
@@ -594,11 +594,19 @@ alpha_ML = m.values[2]
 
 #m.hesse()   # assumes gaussian distribution, not adecuate, ours POISSON
 m.minos()   # run covariance estimator
-#print(m.errors)
+print(m.errors)
 
 a_err = m.errors[0]
 e_err = m.errors[1]
 alpha_err = m.errors[2]
+
+c = [alpha_ML,alpha_err]
+
+with open('HOT_alpha.txt', "w") as file:
+    for x in zip(*c):
+        file.write("{0} {1} {}\n".format(*x))
+
+file.close()
 
 
 "Save contour data"
