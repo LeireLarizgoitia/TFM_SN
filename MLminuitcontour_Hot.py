@@ -609,7 +609,7 @@ a_err = m.errors[1]
 e_err = m.errors[2]
 
 
-print('alphaT: ', alphaT, ' alphaML: ', alpha_ML)
+print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
 
 "Save contour data"
 

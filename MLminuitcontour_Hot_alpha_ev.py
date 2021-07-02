@@ -608,7 +608,7 @@ alpha_err = m.errors[0]
 
 
 print('e: ', e_ML)
-print('alphaT: ', alphaT, ' alphaML: ', alpha_ML)
+print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
 
 
 

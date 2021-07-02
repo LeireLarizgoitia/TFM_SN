@@ -607,7 +607,7 @@ print(m.errors)
 alpha_err = m.errors
 
 
-print('alphaT: ', alphaT, ' alphaML: ', alpha_ML)
+print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
 
 
 with open('HOT_alpha.txt', "w") as file1:
