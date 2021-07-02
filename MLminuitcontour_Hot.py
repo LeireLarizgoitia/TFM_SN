@@ -651,6 +651,6 @@ with open('HOT_contour_at_ev.txt', "w") as txt_file:
 
 txt_file.close()
 
-"""
+
 
 "END OF CODE"
