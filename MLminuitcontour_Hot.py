@@ -111,6 +111,8 @@ Et2 = (gamma(alphae + 3) / gamma(alphae + 1) / (alphae + 1)**2 * Eav_truee  +  g
 
 Et = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
+print(Et)
+
 alpha_T = (2*Et**2 - Et2) / (Et2 - Et**2)
 
 #print('alphat ', alpha_media)
@@ -137,7 +139,7 @@ At_truex = Lx / Area / Eav_truex
 At_media =  L / Area *(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
 #print('Luminosity: ', L / erg_MeV , 'ergs')
-#print('AT in cm^-2 : ', At_media)
+print('AT in cm^-2 : ', At_media)
 
 "NORMALIZATION"
 
@@ -555,11 +557,15 @@ sigma0 = sigma1*np.sqrt(1/T_thres) #sigma/T at threshold
 
 "MINUIT"
 
+n_obs = fnc_events_interval_obs()
+
+
 def fcn_np(par):
     constant_usefull()
-    at=par[0]
-    ev=par[1]
-    alpha = par[2]
+    alpha = par[0]
+    at= par[1]  #At_media
+    ev= par[2]  #Ev_media #par[1]
+
     n_obs = []
     mu = []
 
@@ -574,11 +580,11 @@ def fcn_np(par):
 fcn_np.errordef = 1 #Minuit.LIKELIHOOD
 
 
-at_start = 3.8*1e11
+at_start = 9.8*1e11
 ev_start = 15
 alpha_start = 2.0 #alpha_T
 
-m = Minuit(fcn_np, (at_start,ev_start,alpha_start),name=("a", "b","c")) #
+m = Minuit(fcn_np, (alpha_start, at_start, ev_start),name=("c", "a", "b")) #
 
 m.limits['a'] = (1, None)
 m.limits['b'] = (1, None)
@@ -588,22 +594,20 @@ m.migrad()  # run optimiser
 #m.simplex().migrad()  # run optimiser
 print(m.values)
 
-a_ML = m.values[0] #ESTIMATED PARAMETERS
-e_ML = m.values[1]
-alpha_ML = m.values[2]
+alpha_ML = m.values[0]
+a_ML = m.values[1] #ESTIMATED PARAMETERS
+e_ML = m.values[2]
+
 
 #m.hesse()   # assumes gaussian distribution, not adecuate, ours POISSON
 m.minos()   # run covariance estimator
 print(m.errors)
 
-a_err = m.errors[0]
-e_err = m.errors[1]
-alpha_err = m.errors[2]
 
+alpha_err = m.errors[0]
+a_err = m.errors[1]
+e_err = m.errors[2]
 
-with open('HOT_alpha.txt', "w") as file1:
-    file1.write(alpha_ML)
-file1.close()
 
 print('alphaT: ', alphaT, ' alphaML: ', alpha_ML)
 
@@ -627,7 +631,7 @@ for i in range(0,len(vlist)):
 c=[cv,ce]
 
 
-with open('HOT_ML_a.txt', "w") as file:
+with open('HOT_ML_at_ev.txt', "w") as file:
     for x in zip(*c):
         file.write("{0} {1} \n".format(*x))
 
@@ -640,12 +644,13 @@ grid1 = m.mncontour('a','b', cl=0.6827)  #1SIGMA
 "Save contour data"
 
 #with open('WARM_Mass'+str(int(Mass_detector*1e-3))+'t_'+str(Field)+'Vcm_L'+str(ne_thres)+'electrons_res'+str(sigma0)+'_contour.txt', "w") as txt_file:
-with open('HOT_contour_a.txt', "w") as txt_file:
+with open('HOT_contour_at_ev.txt', "w") as txt_file:
     for line in grid1:
         content = str(line)
         txt_file.write(" ".join(content) + "\n") #AT, Eav
 
 txt_file.close()
 
+"""
 
 "END OF CODE"
