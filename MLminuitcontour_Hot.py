@@ -611,6 +611,12 @@ e_err = m.errors[2]
 
 print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
 
+
+with open('HOT_alpha_at_ev.txt', "w") as file:
+    file.write(str(alpha_ML))
+file.close()
+
+
 "Save contour data"
 
 vlist=[]
@@ -637,13 +643,12 @@ with open('HOT_ML_at_ev.txt', "w") as file:
 
 file.close()
 
-
 "CONTOUR PLOT"
+
 grid1 = m.mncontour('a','b', cl=0.6827)  #1SIGMA
 
 "Save contour data"
 
-#with open('WARM_Mass'+str(int(Mass_detector*1e-3))+'t_'+str(Field)+'Vcm_L'+str(ne_thres)+'electrons_res'+str(sigma0)+'_contour.txt', "w") as txt_file:
 with open('HOT_contour_at_ev.txt', "w") as txt_file:
     for line in grid1:
         content = str(line)
