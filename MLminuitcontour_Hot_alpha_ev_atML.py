@@ -734,6 +734,8 @@ print('e: ', e_ML)
 print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
 
 
+print(n_sum /sum(fnc_events_interval_obs_sum_prima(e_ML,alpha_ML)))
+
 with open('HOT_alpha_ev_atML.txt', "w") as file1:
     file1.write(str(alpha_ML))
 file1.close()
