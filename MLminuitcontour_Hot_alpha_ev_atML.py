@@ -678,6 +678,12 @@ sigma0 = sigma1*np.sqrt(1/T_thres) #sigma/T at threshold
 n_obs = fnc_events_interval_obs()
 n_sum = sum(n_obs)
 
+mux = sum(fnc_events_interval_obs_sum_prima(Ev_media,alpha_T))
+
+at = n_sum / mux
+
+print('at analitico: ', at)
+
 
 def fcn_np(par):
     constant_usefull()
@@ -690,14 +696,13 @@ def fcn_np(par):
 
     at = n_sum / mux
 
-
     mu = []
 
     mu = fnc_events_interval_obs_sum(at,ev,alpha) #events_est
     sum_tot=0
     for i in range(0,len(n_obs)): #sum over bins
         sum_tot = sum_tot + (mu[i] - n_obs[i] + n_obs[i]*np.log(n_obs[i] / mu[i])) # this is lnL / lnL_max
-        chi2 = - 2*sum_tot
+        chi2 = 2*sum_tot
     return chi2
 
 fcn_np.errordef = 1 #Minuit.LIKELIHOOD
