@@ -76,7 +76,7 @@ Enu_max = 50.
 
 "Recoil energy range of Xenon in KeV"
 T_min= 1.
-T_max = 2* (Enu_max*1e3)**2   / (M + 2*Enu_max*1e3 )
+T_max =  2* (Enu_max*1e3)**2   / (M + 2*Enu_max*1e3 )
 
 "Approximation values"
 sin_theta_w_square = 0.2386 #zero momnetum transfer data from the paper XENON1T
@@ -85,6 +85,7 @@ gv_p = 1/2 - sin_theta_w_square
 gv_n = -1/2
 
 "NORMALIZATION CONSTANT"
+#sigma0 = 0.4 #0.497 #actually it is simga0/T_thres
 Mass_detector = 40* 1e3 #kg
 Dist = 10 #kpc
 Distance = Dist * kpc_cm # Supernova at the Galactic centre in cm
@@ -111,9 +112,7 @@ Et2 = (gamma(alphae + 3) / gamma(alphae + 1) / (alphae + 1)**2 * Eav_truee  +  g
 
 Et = 6 / (1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
-print(Et)
-
-alpha_T = (2*Et**2 - Et2) / (Et2 - Et**2)
+alpha_media = 2.0 # (2*Et**2 - Et2) / (Et2 - Et**2)
 
 #print('alphat ', alpha_media)
 
@@ -139,7 +138,7 @@ At_truex = Lx / Area / Eav_truex
 At_media =  L / Area *(1/Eav_truee + 1/Eav_trueantie +  4*1/Eav_truex)
 
 #print('Luminosity: ', L / erg_MeV , 'ergs')
-print('AT in cm^-2 : ', At_media)
+#print('AT in cm^-2 : ', At_media)
 
 "NORMALIZATION"
 
@@ -160,6 +159,7 @@ nsteps = 100
 def F(Q2,N,Rn2,Rn4):  # form factor of the nucleus
     Fn = N* (1 - Q2/math.factorial(3) * Rn2 /hbar_c**2 +  Q2**2/math.factorial(5) * Rn4/hbar_c**4 - Q2**3/math.factorial(7) * Rn6/hbar_c**6) #approximation
     Fp = (1 - 4*sin_theta_w_square)*Z *   (1 - Q2/math.factorial(3) * Rn2 /hbar_c**2 +  Q2**2/math.factorial(5) * Rn4/hbar_c**4 - Q2**3/math.factorial(7) * Rn6/hbar_c**6)
+
     return ((Fn - Fp) / Qw )
 
 def cross_section(T,Enu, N,M,Rn2,Rn4):
@@ -219,7 +219,7 @@ def constant_usefull():
     M = 131.9041535 * constants.u*c**2/e *1e-3 #mass of Xenon 132 in keV
     Enu_min = 0.0
     Enu_max = 50.
-    T_max = 2* (Enu_max*1e3)**2   / (M + 2*Enu_max*1e3 )
+    T_max =  2* (Enu_max*1e3)**2   / (M + 2*Enu_max*1e3 )
 
 "Binning   -  Return: array of T in bins (bin size dependent)"
 def binning():
@@ -559,18 +559,14 @@ sigma0 = sigma1*np.sqrt(1/T_thres) #sigma/T at threshold
 
 n_obs = fnc_events_interval_obs()
 
-
 def fcn_np(par):
     constant_usefull()
-    alpha = par[0]
-    at= par[1]  #At_media
-    ev= par[2]  #Ev_media #par[1]
-
+    at=par[0]
+    ev=par[1]
     n_obs = []
     mu = []
+    mu = fnc_events_interval_obs_sum(at,ev,alpha_media) #events_est
 
-    n_obs = fnc_events_interval_obs()
-    mu = fnc_events_interval_obs_sum(at,ev,alpha) #events_est
     sum_tot=0
     for i in range(0,len(n_obs)): #sum over bins
         sum_tot = sum_tot + (mu[i] - n_obs[i] + n_obs[i]*np.log(n_obs[i] / mu[i])) # this is lnL / lnL_max
@@ -579,43 +575,27 @@ def fcn_np(par):
 
 fcn_np.errordef = 1 #Minuit.LIKELIHOOD
 
-
-at_start = 9.8*1e11
+at_start = 3.8*1e11
 ev_start = 15
-alpha_start = 2.0 #alpha_T
 
-m = Minuit(fcn_np, (alpha_start, at_start, ev_start),name=("c", "a", "b")) #
+m = Minuit(fcn_np, (at_start,ev_start),name=("a", "b")) #
 
 m.limits['a'] = (1, None)
 m.limits['b'] = (1, None)
-m.limits['c'] = (1, None)
 
 m.migrad()  # run optimiser
 #m.simplex().migrad()  # run optimiser
-print(m.values)
+#print(m.values)
 
-alpha_ML = m.values[0]
-a_ML = m.values[1] #ESTIMATED PARAMETERS
-e_ML = m.values[2]
-
+a_ML = m.values[0] #ESTIMATED PARAMETERS
+e_ML = m.values[1]
 
 #m.hesse()   # assumes gaussian distribution, not adecuate, ours POISSON
 m.minos()   # run covariance estimator
-print(m.errors)
+#print(m.errors)
 
-
-alpha_err = m.errors[0]
-a_err = m.errors[1]
-e_err = m.errors[2]
-
-
-print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
-
-
-with open('HOT_alpha_at_ev.txt', "w") as file:
-    file.write(str(alpha_ML))
-file.close()
-
+a_err = m.errors[0]
+e_err = m.errors[1]
 
 "Save contour data"
 
@@ -636,26 +616,24 @@ for i in range(0,len(vlist)):
 
 c=[cv,ce]
 
-
-with open('HOT_ML_at_ev.txt', "w") as file:
+with open('HOT_ML.txt', "w") as file:
     for x in zip(*c):
-        file.write("{0} {1} \n".format(*x))
+        file.write("{0} {1}\n".format(*x))
 
 file.close()
 
-"CONTOUR PLOT"
 
+"CONTOUR PLOT"
 grid1 = m.mncontour('a','b', cl=0.6827)  #1SIGMA
 
 "Save contour data"
 
-with open('HOT_contour_at_ev.txt', "w") as txt_file:
+with open('HOT_contour.txt', "w") as txt_file:
     for line in grid1:
         content = str(line)
         txt_file.write(" ".join(content) + "\n") #AT, Eav
 
 txt_file.close()
-
 
 
 "END OF CODE"
