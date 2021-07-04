@@ -683,11 +683,13 @@ def fcn_np(par):
     constant_usefull()
     #at= At_media #par[0]
 
+    alpha = par[0]
+    ev= par[1]
+
     mux = sum(fnc_events_interval_obs_sum_prima(ev,alpha))
 
     at = n_sum / mux
-    alpha = par[0]
-    ev= par[1]
+
 
     mu = []
 
@@ -730,8 +732,6 @@ alpha_err = m.errors[0]
 
 print('e: ', e_ML)
 print('alphaT: ', alpha_T, ' alphaML: ', alpha_ML)
-
-
 
 
 with open('HOT_alpha_ev_atML.txt', "w") as file1:
