@@ -30,7 +30,7 @@ fs = constants.femto # 1.e-15
 year = constants.year #one year in seconds
 bar = constants.bar
 
-h =  constants.value(u'Planck constant in eV/Hz')
+h =  constants.value(u'Planck constant') / e
 hbar = h/(2*np.pi) # the Planck constant h divided by 2 pi in eV.s
 hbar_c = hbar * c* 1E+9 # units MeV fm
 hbar_c_ke = 6.58211899*1e-17 * c #KeV cm
